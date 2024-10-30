@@ -58,7 +58,7 @@ public class HashedDictionary<K, V> implements DictionaryInterface<K, V>
     } // end displayHashTable
 // -------------------------
 
-    public V add(K key, V value)
+    public int add(K key, V value)
     {
         checkIntegrity();
         if ((key == null) || (value == null))
@@ -68,11 +68,10 @@ public class HashedDictionary<K, V> implements DictionaryInterface<K, V>
             V oldValue;                // Value to return
 
             int index = getHashIndex(key);
-
             // Assertion: index is within legal range for hashTable
             assert (index >= 0) && (index < hashTable.length);
 
-            if ( (hashTable[index] == null) || (hashTable[index] == AVAILABLE) )
+            if ((hashTable[index] == AVAILABLE) )
             { // Key not found, so insert new entry
                 hashTable[index] = new Entry<>(key, value);
                 numberOfEntries++;
@@ -80,15 +79,16 @@ public class HashedDictionary<K, V> implements DictionaryInterface<K, V>
             }
             else
             { // Key found; get old value for return and then replace it
-                oldValue = hashTable[index].getValue();
-                hashTable[index].setValue(value);
+                index = quadraticProbe(index, key);
+                hashTable[index] = new Entry<>(key, value);
+                numberOfEntries++;
             } // end if
 
             // Ensure that hash table is large enough for another add
             if (isHashTableTooFull())
                 enlargeHashTable();
 
-            return oldValue;
+            return index;
         } // end if
     } // end add
 
@@ -162,16 +162,16 @@ public class HashedDictionary<K, V> implements DictionaryInterface<K, V>
     private int getHashIndex(K key)
     {
         int hashIndex = key.hashCode() % hashTable.length;
-
+        System.out.println(key + "initial index: " + hashIndex);
         if (hashIndex < 0)
         {
             hashIndex = hashIndex + hashTable.length;
         } // end if
 
         // Check for and resolve collision
-        hashIndex = linearProbe(hashIndex, key);
-//    hashIndex = quadraticProbe(hashIndex, key);
-
+        //hashIndex = linearProbe(hashIndex, key);
+        hashIndex = quadraticProbe(hashIndex, key);
+        System.out.println(key + "probed index: " + hashIndex);
         return hashIndex;
     } // end getHashIndex
 
@@ -198,6 +198,40 @@ public class HashedDictionary<K, V> implements DictionaryInterface<K, V>
 
                 index = (index + 1) % hashTable.length;            // Linear probing
             } // end if
+        } // end while
+        // Assertion: Either key or null is found at hashTable[index]
+
+        if (found || (availableIndex == -1) )
+            return index;                                      // Index of either key or null
+        else
+            return availableIndex;                          // Index of an available location
+    } // end linearProbe
+
+
+    private int quadraticProbe(int index, K key)
+    {
+        boolean found = false;
+        int availableIndex = -1; // Index of first available location (from which an entry was removed)
+        int x = 1;
+
+        while ( !found && (hashTable[index] != null) )
+        {
+            if (hashTable[index] != AVAILABLE)
+            {
+                if (key.equals(hashTable[index].getKey()))
+                    found = true; // Key found
+                else             // Follow probe sequence
+                    index = (index + x * x) % hashTable.length;         // Linear probing
+            }
+            else // Skip entries that were removed
+            {
+                // Save index of first location in removed state
+                if (availableIndex == -1)
+                    availableIndex = index;
+
+                index = (index + x * x) % hashTable.length;            // Linear probing
+            } // end if
+            x++;
         } // end while
         // Assertion: Either key or null is found at hashTable[index]
 
