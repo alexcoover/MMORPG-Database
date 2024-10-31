@@ -5,6 +5,7 @@ public class Character {
     private double morals;
     private double health;
 
+    //init character
     public Character(String name, double height, double weight, double morals) {
         this.name = name;
         this.height = height;
@@ -12,6 +13,7 @@ public class Character {
         this.morals = morals;
         this.health = 1;
     }
+    //getters
     public String getName() {
         return name;
     }
@@ -28,18 +30,22 @@ public class Character {
         return health;
     }
 
-
+    //add health
     public void heal(double amount){
         health += amount;
     }
 
+    //remove health
     public void injure(double amount){
         health -= amount;
     }
 
+    //add or remove morality
     public void change(double amount){
         morals += amount;
     }
+
+    //print all line by line
     public void printCharacter(){
         System.out.println("Name: " + name);
         System.out.println("Health: " + health);
