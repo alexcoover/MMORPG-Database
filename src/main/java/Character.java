@@ -36,6 +36,7 @@ public class Character {
     public void injure(double amount){
         health -= amount;
     }
+
     public void change(double amount){
         morals += amount;
     }
@@ -44,6 +45,6 @@ public class Character {
         System.out.println("Health: " + health);
         System.out.println("Height: " + height);
         System.out.println("Weight: " + weight);
-        System.out.println("Morals: " + morals);
+        System.out.println("Morals: " + morals + "\n");
     }
 }

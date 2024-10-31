@@ -125,6 +125,12 @@ public class HashedDictionary<K, V> implements DictionaryInterface<K, V>
         return result;
     } // end getValue
 
+    public int getIndex(K key){
+        checkIntegrity();
+        int index = getHashIndex(key);
+        return index;
+    }
+
     public boolean contains(K key)
     {
         return getValue(key) != null;
@@ -162,7 +168,7 @@ public class HashedDictionary<K, V> implements DictionaryInterface<K, V>
     private int getHashIndex(K key)
     {
         int hashIndex = key.hashCode() % hashTable.length;
-        System.out.println(key + "initial index: " + hashIndex);
+        //System.out.println(key + "initial index: " + hashIndex);
         if (hashIndex < 0)
         {
             hashIndex = hashIndex + hashTable.length;
@@ -171,7 +177,7 @@ public class HashedDictionary<K, V> implements DictionaryInterface<K, V>
         // Check for and resolve collision
         //hashIndex = linearProbe(hashIndex, key);
         hashIndex = quadraticProbe(hashIndex, key);
-        System.out.println(key + "probed index: " + hashIndex);
+        //System.out.println(key + "probed index: " + hashIndex);
         return hashIndex;
     } // end getHashIndex
 
