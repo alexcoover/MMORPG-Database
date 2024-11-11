@@ -24,7 +24,7 @@ class CharacterDatabaseTest {
     void getCharacter() {
         CharacterDatabase db = new CharacterDatabase();
         db.addCharacter("Buck", 3, 2, 1);
-        assertEquals(db.list.getFirst(), db.getCharacter("Buck"));
+        assertEquals(db.list.get(0), db.getCharacter("Buck"));
     }
 
     @Test
